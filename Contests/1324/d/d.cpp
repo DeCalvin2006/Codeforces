@@ -5,12 +5,13 @@
 
 #include <bits/stdc++.h>
 using namespace std;
+#define int long long
 const int MAXN = 2E5 + 10;
 int a[MAXN];
 int b[MAXN];
 int ab[MAXN];
 int n;
-int main() {
+signed main() {
   cin >> n;
   for (int i = 1; i <= n; i++) {
     cin >> a[i];
@@ -24,14 +25,15 @@ int main() {
   sort(ab + 1, ab + 1 + n);
   int ans = 0;
   for (int i = 1; i <= n; i++) {
+    if (ab[i] <= 0)
+      continue;
     // cout << b[i] - a[i] << endl;
-    int t = lower_bound(ab + 1, ab + 1 + i, b[i] - a[i]) - (ab + 1);
+    int t = lower_bound(ab + 1, ab + 1 + i, -ab[i] + 1) - (ab);
     // for (int i = 1; i <= t; i++) {
     // cout << ab[t] << ' ';
     //}
     // cout << endl;
-    cout << t << endl;
-    ans += t;
+    ans += i - t;
   }
   cout << ans << endl;
   return 0;
