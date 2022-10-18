@@ -1,8 +1,8 @@
 #include <bits/stdc++.h>
-#define int long long
 using namespace std;
-int read() {
-  int x = 0, f = 1;
+typedef long long ll;
+ll read() {
+  ll x = 0, f = 1;
   char c = getchar();
   while (c > '9' || c < '0') {
     if (c == '-')
@@ -15,63 +15,62 @@ int read() {
   }
   return x * f;
 }
-const int N = 5E3 + 10;
+const int N = 5000 + 10;
+ll a[N];
+ll sum[N];
+int l[N], r[N];
 int n;
-int a[N];
-int sum[N];
-int ans[3], maxsum = LLONG_MIN;
-inline int getsum(int l, int r) {
-  if (r == 0) {
-    return 0;
-  }
-  if (l == 0) {
-    return sum[r - 1];
-  }
-  return sum[r - 1] - sum[l - 1];
-}
-signed main() {
+inline ll getsum(int l, int r) { return sum[r - 1] - sum[l - 1]; }
+// ostream &print_seg(int l, int r) {
+//   clog << "[" << l << "," << r << ")=" << getsum(l, r);
+//   return clog;
+// }
+int main() {
   n = read();
   for (int i = 0; i < n; i++) {
     a[i] = read();
-  }
-  sum[0] = a[0];
-  for (int i = 1; i < n; i++) {
     sum[i] = sum[i - 1] + a[i];
   }
-  for (int end1 = 0; end1 <= n; end1++) {
-    int sumx = getsum(0, end1);
-    int sum2 = LLONG_MAX;
-    int end2 = end1;
-    for (int tmpend2 = end1; tmpend2 <= n; tmpend2++) {
-      if (getsum(end1, tmpend2) < sum2) {
-        sum2 = getsum(end1, tmpend2);
-        end2 = tmpend2;
+  for (int i = 0; i < n; i++) {
+    ll maxsum = LLONG_MIN;
+    int left = 1;
+    for (int j = 0; j <= i; j++) {
+      if (getsum(0, j) - getsum(j, i) > maxsum) {
+        maxsum = getsum(0, j) - getsum(j, i);
+        left = j;
       }
     }
-    sumx -= sum2;
-    int sum3 = LLONG_MIN;
-    int end3 = end2;
-    for (int tmpend3 = end2; tmpend3 <= n; tmpend3++) {
-      if (getsum(end2, tmpend3) > sum3) {
-        sum3 = getsum(end2, tmpend3);
-        end3 = tmpend3;
+    l[i] = left;
+  }
+  for (int i = 0; i < n; i++) {
+    ll maxsum = LLONG_MIN;
+    int right = n;
+    for (int j = i; j <= n; j++) {
+      if (getsum(i, j) - getsum(j, n + 1) > maxsum) {
+        maxsum = getsum(i, j) - getsum(j, n + 1);
+        right = j;
       }
     }
-    sumx += sum3;
-    sumx -= getsum(end3, n);
-    if (sumx > maxsum) {
-      ans[0] = end1, ans[1] = end2, ans[2] = end3;
-      clog << "[" << 0 << "," << ans[0] << ")" << endl;
-      clog << "[" << ans[0] << "," << ans[1] << ")" << endl;
-      clog << "[" << ans[1] << "," << ans[2] << ")" << endl;
-      clog << "[" << ans[2] << "," << n + 1 << ")" << endl;
-      clog << sumx << endl;
-      maxsum = sumx;
+    r[i] = right;
+  }
+  long long ans = LLONG_MIN, ans1, ans2, ans3;
+  for (int i = 0; i < n; i++) {
+    int tmp1 = l[i], tmp2 = i, tmp3 = r[i];
+    ll val = getsum(0, tmp1) - getsum(tmp1, tmp2) + getsum(tmp2, tmp3) -
+             getsum(tmp3, n);
+    if (val > ans) {
+      ans = val;
+      ans1 = tmp1, ans2 = tmp2, ans3 = tmp3;
     }
-    clog << endl;
   }
-  for (auto k : (ans)) {
-    cout << k << ' ';
-  }
+  // for (int i = 0; i < n; i++) {
+  //   clog << l[i] << ' ' << i << ' ' << r[i] << endl;
+  //   print_seg(0, l[i]) << ' ';
+  //   print_seg(l[i], i) << ' ';
+  //   print_seg(i, r[i]) << ' ';
+  //   print_seg(r[i], n) << endl;
+  // }
+  cout << ans1 << ' ' << ans2 << ' ' << ans3 << endl;
+  // TODO: code here
   return 0;
 }
